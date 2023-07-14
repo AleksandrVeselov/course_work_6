@@ -14,10 +14,14 @@
                 </div>
                 <div class="card-body">
                     <ul class="list-unstyled mt-3 mb-4 text-start m-3">
-                        <li>Клиент: {{ object.client }}</li>
-                        <li>Сообщение: {{ object.message }}</li>
-                        <li>Периодичность: {{ object.get_periodicity_display }}</li>
-                        <li>Статус: {{ object.get_status_display }}</li>
+                        <h6>Клиенты:</h6>
+                        <li>{{ object.client.all | join:", " }}</li>
+                        <h6>Сообщение:</h6>
+                        <li>{{ object.message }}</li>
+                        <h6>Периодичность:</h6>
+                         <li>{{ object.get_periodicity_display }}</li>
+                        <h6>Статус:</h6>
+                        <li>{{ object.get_status_display }}</li>
                     </ul>
                         <a href="#" type="button" class="btn btn-lg btn-block btn-outline-primary">Редактировать</a>
                 </div>
