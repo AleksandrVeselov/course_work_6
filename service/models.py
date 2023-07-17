@@ -1,4 +1,8 @@
+import datetime
+
 from django.db import models
+
+from service.cron import send_mailing
 
 # варианты периодичности рассылки (раз в день, в неделю, в месяц)
 MAILING_PERIODICITY = [(1, 'раз в день'), (2, 'раз в неделю'), (3, 'раз в месяц')]
@@ -53,6 +57,11 @@ class Mailing(models.Model):
     class Meta:
         verbose_name = 'Рассылка'
         verbose_name_plural = 'Рассылки'
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        print(self.date_time)
+        print(self.message)
 
 
 class MailingLog(models.Model):
