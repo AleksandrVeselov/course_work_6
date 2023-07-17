@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, DeleteView, ListView
 
+from service.cron import send_mailing
 from service.models import Mailing, Client, MailingMessage
 
 
@@ -30,7 +31,11 @@ class MailingCreateView(CreateView):
     model = Mailing
     fields = ('date_time', 'periodicity', 'client', 'status', 'message')
     success_url = reverse_lazy('service:home')
-
+    
+    def form_valid(self, form, *args, **kwargs):
+        mailing = form.save()
+        mailing.save()
+        return super().form_valid(form)
 
 class MailingUpdateView(UpdateView):
     """Класс-представление для редактирования рассылки"""

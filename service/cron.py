@@ -8,4 +8,4 @@ def send_mailing(recipients: list, title: str, text: str) -> None:
     send_mail(title,  # Тема письма
               text,
               settings.EMAIL_HOST_USER,  # От кого письмо
-              recipient_list=['aleksandr1990veselov@yandex.ru'])
+              recipient_list=recipients)

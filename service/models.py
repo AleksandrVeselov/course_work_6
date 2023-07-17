@@ -60,8 +60,12 @@ class Mailing(models.Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        print(self.date_time)
-        print(self.message)
+        date_time = self.date_time
+        mailing_title = self.message.title
+        mailing_message = self.message.message
+        emails_queryset = self.client.values('email')
+        mailing_emails = [e['email'] for e in emails_queryset]
+        send_mailing(mailing_emails, mailing_title, mailing_message)
 
 
 class MailingLog(models.Model):
