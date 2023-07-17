@@ -33,9 +33,11 @@ class MailingCreateView(CreateView):
     success_url = reverse_lazy('service:home')
     
     def form_valid(self, form, *args, **kwargs):
-        mailing = form.save()
-        mailing.save()
+        """Переопределение метода form_valid для вызова метода save модели Mailing и отправки сообщения"""
+
+        form.save()
         return super().form_valid(form)
+
 
 class MailingUpdateView(UpdateView):
     """Класс-представление для редактирования рассылки"""

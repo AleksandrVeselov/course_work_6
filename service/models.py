@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime, timezone
 
 from django.db import models
 
@@ -59,13 +59,20 @@ class Mailing(models.Model):
         verbose_name_plural = 'Рассылки'
 
     def save(self, *args, **kwargs):
+        """Переопределение метода для реализации логики отправки сообщения на почту"""
+
         super().save(*args, **kwargs)
-        date_time = self.date_time
-        mailing_title = self.message.title
-        mailing_message = self.message.message
-        emails_queryset = self.client.values('email')
-        mailing_emails = [e['email'] for e in emails_queryset]
-        send_mailing(mailing_emails, mailing_title, mailing_message)
+
+        date_time = self.date_time  # дата и время рассылки
+
+        # Если дата рассылки больше текущей даты
+        if date_time > datetime.now(timezone.utc):
+
+            mailing_title = self.message.title  # тема письма для рассылки
+            mailing_message = self.message.message  # тело письма для рассылки
+            emails_queryset = self.client.values('email')  # словарь с адресами почтовых ящиков для рассылки
+            mailing_emails = [e['email'] for e in emails_queryset]  # список почтовых ящиков
+            send_mailing(mailing_emails, mailing_title, mailing_message)  # вызов функции для рассылки
 
 
 class MailingLog(models.Model):
