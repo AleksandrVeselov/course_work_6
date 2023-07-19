@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'service',  # мое приложение
-    # 'django_crontab'
+    'django_crontab'
 ]
 
 MIDDLEWARE = [

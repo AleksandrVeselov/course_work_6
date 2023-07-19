@@ -1,9 +1,6 @@
-from django.db import models
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, DeleteView, ListView
-
-from service.cron import send_mailing
 from service.models import Mailing, Client, MailingMessage
 
 
@@ -29,14 +26,8 @@ class MailingListView(ListView):
 class MailingCreateView(CreateView):
     """Класс-представление для создания рассылки"""
     model = Mailing
-    fields = ('date_time', 'periodicity', 'client', 'status', 'message')
+    fields = ('date_time', 'periodicity', 'client', 'message')
     success_url = reverse_lazy('service:home')
-    
-    def form_valid(self, form, *args, **kwargs):
-        """Переопределение метода form_valid для вызова метода save модели Mailing и отправки сообщения"""
-
-        form.save()
-        return super().form_valid(form)
 
 
 class MailingUpdateView(UpdateView):

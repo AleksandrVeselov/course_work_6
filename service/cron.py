@@ -1,40 +1,47 @@
 from django.core.mail import send_mail
 
 from config import settings
-from service.models import MailingLog, Mailing
+from service import models
 
 
-def send_mailing(recipients: Mailing, title: str, text: str) -> None:
+def send_mailing(recipients) -> None:
     """Отправка рассылки клиентам из списка recipient"""
 
-    emails = recipients.client.values_list('email')
+    emails = recipients.client.values_list('email')  # список почтовых адресов для рассылки
+    title = recipients.message.title  # тема письма
+    text = recipients.message.message  # текст письма
+
     for email in emails:
         try:
             send_mail(title,  # Тема письма
                       text,
                       settings.EMAIL_HOST_USER,  # От кого письмо
-                      recipient_list=[email])
+                      recipient_list=[email])  # попытка отправить письмо
             status = 'success'
             answer = 'Письмо отправлено успешно!'
 
+        # Если при отправке письма возникает ошибка
         except Exception as err:
             status = 'error'
             answer = str(err)
 
-        MailingLog.objects.create(status=status, answer=answer, mailing=recipients)
+        models.MailingLog.objects.create(status=status, answer=answer, mailing=recipients)  # создание записи в логе
 
 
 def hourly_sending():
-    for item in Mailing.objects.filter(periodicity=1):
-        item.status = 3
-        item.save()
-        send_mailing(item)
-        item.status = 2
-        item.save()
+    """Часовая рассылка"""
+
+    for item in models.Mailing.objects.filter(periodicity=1):
+        item.status = 3  # статус запущена
+        item.save()  # сохранение
+        send_mailing(item)  # отправка письма
+        item.status = 2  # статус завершена
+        item.save()  # сохранение статуса
 
 
 def daily_sending():
-    for item in Mailing.objects.filter(periodicity=2):
+    """Дневная рассылка"""
+    for item in models.Mailing.objects.filter(periodicity=2):
         item.status = 3
         item.save()
         send_mailing(item)
@@ -43,7 +50,8 @@ def daily_sending():
 
 
 def weekly_sending():
-    for item in Mailing.objects.filter(periodicity=3):
+    """Недельная рассылка"""
+    for item in models.Mailing.objects.filter(periodicity=3):
         item.status = 3
         item.save()
         send_mailing(item)
