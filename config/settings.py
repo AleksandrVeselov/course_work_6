@@ -134,10 +134,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 EMAIL_HOST = os.getenv('EMAIL_HOST')
 EMAIL_PORT = int(os.getenv('EMAIL_PORT'))
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')  # Здесь должен быть пароль для внешнего приложения из аккаунта mail.ru
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
 
+
 CRONJOBS = [
-    ('*/5 * * * *', 'service.cron.my_scheduled_job')
+    ('1 * * * *', 'service.cron.hourly_sending'),
+    ('0 0 * * 0', 'service.cron.daily_sending'),
+    ('0 0 * * *', 'service.cron.monthly_sending')
 ]
