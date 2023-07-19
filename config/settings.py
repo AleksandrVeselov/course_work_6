@@ -140,7 +140,7 @@ EMAIL_USE_SSL = True
 
 
 CRONJOBS = [
-    ('1 * * * *', 'service.cron.hourly_sending'),
-    ('0 0 * * 0', 'service.cron.daily_sending'),
-    ('0 0 * * *', 'service.cron.monthly_sending')
+    ('52 22 * * *', 'service.cron.hourly_sending'),
+    ('52 22 * * *', 'service.cron.daily_sending'),
+    ('52 22 * * *', 'service.cron.monthly_sending')
 ]

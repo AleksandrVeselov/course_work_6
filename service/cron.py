@@ -30,8 +30,8 @@ def send_mailing(recipients) -> None:
 
 def hourly_sending():
     """Часовая рассылка"""
-
-    for item in models.Mailing.objects.filter(periodicity=1):
+    print('Часовая рассылка')
+    for item in models.Mailing.objects.filter(periodicity=1, status=2):
         item.status = 3  # статус запущена
         item.save()  # сохранение
         send_mailing(item)  # отправка письма
@@ -41,7 +41,8 @@ def hourly_sending():
 
 def daily_sending():
     """Дневная рассылка"""
-    for item in models.Mailing.objects.filter(periodicity=2):
+    print('Дневная рассылка')
+    for item in models.Mailing.objects.filter(periodicity=2, status=2):
         item.status = 3
         item.save()
         send_mailing(item)
@@ -51,7 +52,8 @@ def daily_sending():
 
 def weekly_sending():
     """Недельная рассылка"""
-    for item in models.Mailing.objects.filter(periodicity=3):
+    print('Недельная рассылка')
+    for item in models.Mailing.objects.filter(periodicity=3, status=2):
         item.status = 3
         item.save()
         send_mailing(item)
