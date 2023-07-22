@@ -1,6 +1,8 @@
 
 from django.db import models
 
+from service.cron import send_mailing
+
 # варианты периодичности рассылки (раз в день, в неделю, в месяц)
 MAILING_PERIODICITY = [(1, 'раз в день'), (2, 'раз в неделю'), (3, 'раз в месяц')]
 
@@ -59,7 +61,7 @@ class Mailing(models.Model):
 class MailingLog(models.Model):
     """Модель лог рассылки"""
 
-    date_time = models.DateTimeField()  # дата и время последней попытки
+    date_time = models.DateTimeField(auto_now_add=True)  # дата и время последней попытки (формируется автоматически)
     status = models.CharField(max_length=100, verbose_name='Статус попытки')  # статус попытки
     answer = models.CharField(max_length=100, verbose_name='Ответ сервера', **NULLABLE)  # ответ почтового сервера
     mailing = models.ForeignKey(Mailing, on_delete=models.CASCADE)  # рассылка
@@ -67,3 +69,4 @@ class MailingLog(models.Model):
     class Meta:
         verbose_name = 'Лог'
         verbose_name_plural = 'Логи'
+

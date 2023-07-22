@@ -6,8 +6,7 @@ from service import models
 
 def send_mailing(recipients) -> None:
     """Отправка рассылки клиентам из списка recipient"""
-
-    emails = recipients.client.values_list('email')  # список почтовых адресов для рассылки
+    emails = recipients.client.values('email')  # список почтовых адресов для рассылки
     title = recipients.message.title  # тема письма
     text = recipients.message.message  # текст письма
 
@@ -16,7 +15,7 @@ def send_mailing(recipients) -> None:
             send_mail(title,  # Тема письма
                       text,
                       settings.EMAIL_HOST_USER,  # От кого письмо
-                      recipient_list=[email])  # попытка отправить письмо
+                      recipient_list=[email['email']])  # попытка отправить письмо
             status = 'success'
             answer = 'Письмо отправлено успешно!'
 
@@ -28,7 +27,7 @@ def send_mailing(recipients) -> None:
         models.MailingLog.objects.create(status=status, answer=answer, mailing=recipients)  # создание записи в логе
 
 
-def hourly_sending():
+def daily_sending():
     """Часовая рассылка"""
     print('Часовая рассылка')
     for item in models.Mailing.objects.filter(periodicity=1, status=2):
@@ -39,9 +38,8 @@ def hourly_sending():
         item.save()  # сохранение статуса
 
 
-def daily_sending():
+def weekly_sending():
     """Дневная рассылка"""
-    print('Дневная рассылка')
     for item in models.Mailing.objects.filter(periodicity=2, status=2):
         item.status = 3
         item.save()
@@ -50,9 +48,8 @@ def daily_sending():
         item.save()
 
 
-def weekly_sending():
+def monthly_sending():
     """Недельная рассылка"""
-    print('Недельная рассылка')
     for item in models.Mailing.objects.filter(periodicity=3, status=2):
         item.status = 3
         item.save()

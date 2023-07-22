@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'service',  # мое приложение
+    'users',  # приложение пользователи
     'django_crontab'
 ]
 
@@ -138,9 +139,11 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
 
+AUTH_USER_MODEL = 'users.user'
+
 
 CRONJOBS = [
-    ('52 22 * * *', 'service.cron.hourly_sending'),
-    ('52 22 * * *', 'service.cron.daily_sending'),
-    ('52 22 * * *', 'service.cron.monthly_sending')
+    ('0 0 * * *', 'service.cron.daily_sending'),
+    ('59 23 * * 0', 'service.cron.weekly_sending'),
+    ('59 23 * * 28', 'service.cron.monthly_sending')
 ]
