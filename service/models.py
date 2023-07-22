@@ -1,6 +1,6 @@
-
 from django.db import models
 
+from config import settings
 from service.cron import send_mailing
 
 # варианты периодичности рассылки (раз в день, в неделю, в месяц)
@@ -32,6 +32,7 @@ class Client(models.Model):
     surname = models.CharField(max_length=100, verbose_name='Фамилия')  # фамилия
     patronymic = models.CharField(max_length=100, verbose_name='Отчество')  # отчество
     comment = models.TextField(verbose_name='Комментарий', **NULLABLE)  # комментарий
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE)  # Владелец (ссылка)
 
     def __str__(self):
         return f'{self.surname} {self.name} {self.patronymic}'
@@ -49,6 +50,13 @@ class Mailing(models.Model):
     status = models.PositiveSmallIntegerField(choices=MAILING_STATUS, default=2)  # статус рассылки
     client = models.ManyToManyField(Client)  # клиент рассылки
     message = models.ForeignKey(MailingMessage, on_delete=models.CASCADE)  # сообщение для рассылки
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE)  # Владелец (ссылка)
+
+    class Meta:
+        """Кастомные права доступа"""
+        permissions = [('can_view_mailings', 'can_view_mailings'),
+                       ('can_disable_mailings', 'can_disable_mailings'),
+                       ]
 
     def __str__(self):
         return f'Рассылка на {self.date_time} с периодичностью {self.periodicity}. Статус {self.status}'
@@ -69,4 +77,3 @@ class MailingLog(models.Model):
     class Meta:
         verbose_name = 'Лог'
         verbose_name_plural = 'Логи'
-
