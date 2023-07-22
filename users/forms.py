@@ -1,8 +1,6 @@
 from django import forms
-from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.core.mail import send_mail
-from django.shortcuts import render
 
 from config import settings
 from users.models import User
@@ -47,11 +45,3 @@ class UserProfileForm(UserChangeForm):
             field.widget.attrs['class'] = 'form-control'
 
         self.fields['password'].widget = forms.HiddenInput()
-
-def activate_new_user(request, pk):
-    """Функция для активации нового пользователя"""
-    user = get_user_model()  # получение модели пользователя
-    user_for_activate = user.objects.get(id=pk)  # получение пользователя с нужным id
-    user_for_activate.is_active = True  # смена флага у пользователя на True
-    user_for_activate.save()  # сохранение
-    return render(request, 'users/activate_user.html')

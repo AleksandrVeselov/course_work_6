@@ -9,6 +9,7 @@
 </head>
 <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
     <h3 class="my-0 mr-md-auto font-weight-normal">AleksMailing</h3>
+    <h3 class="my-0 mr-md-auto font-weight-normal">{{ user.name }}</h3>
     <h5 class="my-0 mr-md-auto font-weight-normal">Добро пожаловать в сервис рассылок AleksMailing</h5>
     <nav class="ms-6">
         <a href="{% url 'service:create' %}" type="button" class="p-2 btn btn-outline-primary">Создать рассылку</a>
