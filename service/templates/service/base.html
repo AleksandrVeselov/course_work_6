@@ -37,6 +37,9 @@
                 <h5>Категории</h5>
                 <ul class="list-unstyled text-small">
                     <li><a class="text-muted" href="{% url 'service:mailings' %}">Все рассылки</a></li>
+                    {% if perms.can_view_users %}
+                        <li><a class="text-muted" href="{% url 'users:users_list' %}">Пользователи сервиса</a></li>
+                    {% endif %}
                 </ul>
             </div>
             <div class="col-6 col-md">

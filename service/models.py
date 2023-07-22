@@ -52,18 +52,15 @@ class Mailing(models.Model):
     message = models.ForeignKey(MailingMessage, on_delete=models.CASCADE)  # сообщение для рассылки
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE)  # Владелец (ссылка)
 
-    class Meta:
-        """Кастомные права доступа"""
-        permissions = [('can_view_mailings', 'can_view_mailings'),
-                       ('can_disable_mailings', 'can_disable_mailings'),
-                       ]
-
     def __str__(self):
         return f'Рассылка на {self.date_time} с периодичностью {self.periodicity}. Статус {self.status}'
 
     class Meta:
         verbose_name = 'Рассылка'
         verbose_name_plural = 'Рассылки'
+        permissions = [('can_view_mailings', 'can_view_mailings'),
+                       ('can_disable_mailings', 'can_disable_mailings'),
+                       ]
 
 
 class MailingLog(models.Model):
