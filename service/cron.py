@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from django.core.mail import send_mail
 
 from config import settings
@@ -5,7 +7,7 @@ from service import models
 
 
 def send_mailing(recipients) -> None:
-    """Отправка рассылки клиентам из списка recipient"""
+    """Отправка рассылки клиентам из списка recipients"""
     emails = recipients.client.values('email')  # список почтовых адресов для рассылки
     title = recipients.message.title  # тема письма
     text = recipients.message.message  # текст письма
@@ -27,35 +29,43 @@ def send_mailing(recipients) -> None:
         models.MailingLog.objects.create(status=status, answer=answer, mailing=recipients)  # создание записи в логе
 
 
-def daily_sending():
-    """Часовая рассылка"""
-    print('Часовая рассылка')
-    for item in models.Mailing.objects.filter(periodicity=1, status=2):
-        item.status = 3  # статус запущена
-        item.save()  # сохранение
-        send_mailing(item)  # отправка письма
-        item.status = 2  # статус завершена
-        item.save()  # сохранение статуса
+def send_email_tasks():
+    """Функция для управления рассылками"""
 
+    now = datetime.now()  # текущая дата
+    mailings = models.Mailing.objects.filter(status__in=[2, 3])  # рассылки со статусом создана или запущена
 
-def weekly_sending():
-    """Дневная рассылка"""
-    for item in models.Mailing.objects.filter(periodicity=2, status=2):
-        item.status = 3
-        item.save()
-        send_mailing(item)
-        item.status = 2
-        item.save()
+    to_send = False  # флаг отправки
 
+    for mailing in mailings:
 
-def monthly_sending():
-    """Недельная рассылка"""
-    for item in models.Mailing.objects.filter(periodicity=3, status=2):
-        item.status = 3
-        item.save()
-        send_mailing(item)
-        item.status = 2
-        item.save()
+        # если текущее время совпадает с временем рассылки
+        if mailing.date_time.strftime('%H:%M') == now.strftime('%H:%M'):
+            last_log = models.MailingLog.objects.filter(mailing=mailing.id).last()  # последняя попытка отправки
 
+            # если рассылка еще не отправлялась
+            if not last_log:
+                to_send = True  # флаг отправки принимает значение True
+
+            # Если рассылка уже отправлялась
+            else:
+                # вычисление разницы между текущей датой и последней попыткой отправки
+                from_last = now.date() - last_log.date_time.date()
+
+                # если периодичность отправки - раз в день и последняя попытка была один день назад
+                if mailing.periodicity == 1 and from_last == timedelta(days=1):
+                    to_send = True  # флаг отправки принимает значение True
+
+                # если периодичность отправки - раз в неделю и последняя попытка была семь дней назад
+                elif mailing.periodicity == 2 and from_last == timedelta(days=7):
+                    to_send = True  # флаг отправки принимает значение True
+
+                # если периодичность отправки - раз в месяц и последняя попытка была 30 дней назад
+                elif mailing.periodicity == 3 and from_last == timedelta(days=30):
+                    to_send = True  # флаг отправки принимает значение True
+
+        # если флаг отправки True - запуск рассылки
+        if to_send:
+            send_mailing(mailing)
 
 

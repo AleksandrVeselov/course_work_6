@@ -143,9 +143,7 @@ AUTH_USER_MODEL = 'users.user'
 LOGOUT_REDIRECT_URL = '/'
 LOGIN_REDIRECT_URL = '/'
 
-
+# Запуск функции send_email_tasks каждую минуту
 CRONJOBS = [
-    ('0 0 * * *', 'service.cron.daily_sending'),
-    ('59 23 * * 0', 'service.cron.weekly_sending'),
-    ('59 23 * * 28', 'service.cron.monthly_sending')
+    ('*/1 * * * *', 'service.cron.send_email_tasks'),
 ]
