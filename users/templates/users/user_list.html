@@ -27,7 +27,13 @@
                             {% endif %}
                         </li>
                     </ul>
-                        <a href="{% url 'users:block_user' object.pk %}" type="button" class="btn btn-lg btn-block btn-outline-danger">Заблокировать</a>
+                    {% if object != user %}
+                        {% if object.is_active %}
+                            <a href="{% url 'users:block_user' object.pk %}" type="button" class="btn btn-lg btn-block btn-outline-danger">Заблокировать</a>
+                        {% else %}
+                            <a href="{% url 'users:block_user' object.pk %}" type="button" class="btn btn-lg btn-block btn-outline-danger">Разблокировать</a>
+                        {% endif %}
+                    {% endif %}
                 </div>
             </div>
         </div>

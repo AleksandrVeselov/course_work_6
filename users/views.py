@@ -51,7 +51,17 @@ def activate_new_user(request, pk):
 
 
 def block_user(request, pk):
-    user_for_block = User.objects.get(id=pk)
-    user_for_block.is_active = False
+    """Контроллер для управления активностью зарегистрированных в системе пользователей"""
+
+    user_for_block = User.objects.get(id=pk)  # пользователь для блокировки
+
+    # проверка статуса активности
+    if user_for_block.is_active:
+        user_for_block.is_active = False
+    else:
+        user_for_block.is_active = True
+
     user_for_block.save()
-    return redirect(reverse('users:users_list'))
+
+    return redirect(reverse('users:users_list'))  # перенаправление на страницу со списком пользователей
+

@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
-from django.shortcuts import render
-from django.urls import reverse_lazy
+from django.shortcuts import render, redirect
+from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, UpdateView, DeleteView, ListView
 
 from service.forms import MailingForm
@@ -10,7 +10,13 @@ from service.models import Mailing, Client, MailingMessage
 def home(request):
     """Домашняя страница с выводом списка всех созданных, но не проведенных рассылок"""
 
-    mailing_list = Mailing.objects.filter(status=2 or 3, owner=request.user.pk)  # фильтрация рассылок
+    # если у пользователя есть права
+    if request.user.has_perm('can_disable_mailings'):
+        mailing_list = Mailing.objects.filter(status=2 or 3)  # фильтрация рассылок
+
+    else:
+        mailing_list = Mailing.objects.filter(status=2 or 3, owner=request.user.pk)  # фильтрация рассылок
+
     context = {'object_list': mailing_list, 'title': 'Список активных рассылок'}  # создание контекста для передачи в render
     return render(request, 'service/home.html', context)
 
@@ -28,7 +34,13 @@ class MailingListView(ListView):
     def get_queryset(self):
         """фильтрация всех рассылок, созданных текущим пользователем"""
 
-        return Mailing.objects.filter(owner=self.request.user.pk)
+        # Если у пользователя есть права на отключение любой рассылки
+        if self.request.user.has_perm('can_disable_mailings'):
+            return super().get_queryset()
+
+        # Иначе пользователю доступны только созданные им рассылки
+        else:
+            return Mailing.objects.filter(owner=self.request.user.pk)
 
 
 class MailingCreateView(CreateView):
@@ -75,3 +87,11 @@ class MessageCreateView(CreateView):
     model = MailingMessage
     fields = ('title', 'message')
     success_url = reverse_lazy('service:create')
+
+
+def disable_mailing(request, pk):
+    """функция для отключения рассылок"""
+    mailing_for_disable = Mailing.objects.get(pk=pk)
+    mailing_for_disable.status = 1
+    mailing_for_disable.save()
+    return redirect(reverse('service:mailings'))

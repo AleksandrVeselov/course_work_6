@@ -2,7 +2,7 @@ from django.urls import path
 
 from service.apps import ServiceConfig
 from service.views import home, MailingCreateView, MailingUpdateView, MailingDeleteView, ClientCreateView, \
-    MessageCreateView, MailingListView
+    MessageCreateView, MailingListView, disable_mailing
 
 app_name = ServiceConfig.name
 
@@ -14,4 +14,5 @@ urlpatterns = [
     path('client/create', ClientCreateView.as_view(), name='create_client'),  # Страница создания клиента для рассылки
     path('message/create', MessageCreateView.as_view(), name='create_message'),  # Страница создания сообщения рассылки
     path('mailings/', MailingListView.as_view(), name='mailings'),
+    path('mailings/disable/<int:pk>', disable_mailing, name='disable')
 ]
