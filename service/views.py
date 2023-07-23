@@ -9,9 +9,9 @@ from service.models import Mailing, Client, MailingMessage
 
 def home(request):
     """Домашняя страница с выводом списка всех созданных, но не проведенных рассылок"""
-
+    print(request.user.has_perm('service.can_disable_mailings'))
     # если у пользователя есть права
-    if request.user.has_perm('can_disable_mailings'):
+    if request.user.has_perm('service.can_disable_mailings'):
         mailing_list = Mailing.objects.filter(status=2 or 3)  # фильтрация рассылок
 
     else:
@@ -35,7 +35,7 @@ class MailingListView(ListView):
         """фильтрация всех рассылок, созданных текущим пользователем"""
 
         # Если у пользователя есть права на отключение любой рассылки
-        if self.request.user.has_perm('can_disable_mailings'):
+        if self.request.user.has_perm('service.can_disable_mailings'):
             return super().get_queryset()
 
         # Иначе пользователю доступны только созданные им рассылки
