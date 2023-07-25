@@ -74,3 +74,17 @@ class MailingLog(models.Model):
     class Meta:
         verbose_name = 'Лог'
         verbose_name_plural = 'Логи'
+
+
+class Blog(models.Model):
+    """Модель блога"""
+
+    title = models.CharField(max_length=100, verbose_name='Заголовок')
+    description = models.TextField(verbose_name='Описание')
+    image = models.ImageField(upload_to='image/', verbose_name='Изображение', **NULLABLE)
+    views_count = models.IntegerField(default=0, verbose_name='Количество просмотров')
+    published_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Статья'
+        verbose_name_plural = 'Статьи'

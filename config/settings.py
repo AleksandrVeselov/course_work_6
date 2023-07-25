@@ -42,7 +42,7 @@ INSTALLED_APPS = [
 
     'service',  # мое приложение
     'users',  # приложение пользователи
-    'django_crontab'
+    'django_crontab',
 ]
 
 MIDDLEWARE = [

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from service.models import Client, MailingMessage, Mailing
+from service.models import Client, MailingMessage, Mailing, Blog
 
 
 @admin.register(Client)
@@ -19,3 +19,9 @@ class MailingMessageAdmin(admin.ModelAdmin):
 class MailingAdmin(admin.ModelAdmin):
     """Регистрация модели Mailing в админ-панели"""
     list_display = ['date_time', 'periodicity', 'message']
+
+
+@admin.register(Blog)
+class BlogAdmin(admin.ModelAdmin):
+    """Регистрация модели Blog"""
+    list_display = ['title', 'description', 'image']

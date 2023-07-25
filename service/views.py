@@ -1,23 +1,37 @@
+import random
+
 from django.contrib.auth import get_user_model
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, UpdateView, DeleteView, ListView
 
 from service.forms import MailingForm
-from service.models import Mailing, Client, MailingMessage
+from service.models import Mailing, Client, MailingMessage, Blog
 
 
 def home(request):
     """Домашняя страница с выводом списка всех созданных, но не проведенных рассылок"""
-    print(request.user.has_perm('service.can_disable_mailings'))
+    posts = Blog.objects.all()  # получаем все статьи в блоге
+    posts_for_context = []
+    if len(posts) > 3:
+        for i in range(3):
+            number = random.randint(0, len(posts))
+            posts_for_context.append(posts[number])
+    else:
+        posts_for_context = posts
     # если у пользователя есть права
     if request.user.has_perm('service.can_disable_mailings'):
-        mailing_list = Mailing.objects.filter(status=2 or 3)  # фильтрация рассылок
+        mailing_list = Mailing.objects.filter(status=2 or 3)  # все активные или созданные рассылки
+        mailing_all = Mailing.objects.all()  # все рассылки, созданные в сервисе
 
     else:
-        mailing_list = Mailing.objects.filter(status=2 or 3, owner=request.user.pk)  # фильтрация рассылок
+        mailing_list = Mailing.objects.filter(status=2 or 3, owner=request.user.pk)  # все активные или созданные рассылки пользователя
+        mailing_all = Mailing.objects.filter(owner=request.user.pk)  # все рассылки пользователя
 
-    context = {'object_list': mailing_list, 'title': 'Список активных рассылок'}  # создание контекста для передачи в render
+    context = {'object_list': mailing_list, 'title': 'Список активных рассылок',
+               'count_active_mailings': len(mailing_list),
+               'count_mailings': len(mailing_all),
+               'posts': posts_for_context}  # создание контекста для передачи в render
     return render(request, 'service/home.html', context)
 
 
