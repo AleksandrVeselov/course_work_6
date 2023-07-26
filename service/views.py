@@ -7,6 +7,7 @@ from django.views.generic import CreateView, UpdateView, DeleteView, ListView
 
 from service.forms import MailingForm
 from service.models import Mailing, Client, MailingMessage, Blog
+from users.models import User
 
 
 def home(request):
@@ -17,6 +18,7 @@ def home(request):
         for i in range(3):
             number = random.randint(0, len(posts))
             posts_for_context.append(posts[number])
+            print(posts[number])
     else:
         posts_for_context = posts
     # если у пользователя есть права
@@ -28,17 +30,19 @@ def home(request):
         mailing_list = Mailing.objects.filter(status=2 or 3, owner=request.user.pk)  # все активные или созданные рассылки пользователя
         mailing_all = Mailing.objects.filter(owner=request.user.pk)  # все рассылки пользователя
 
+    count_active_users = User.objects.filter(is_active=True)  # количество активных пользователей сервиса
     context = {'object_list': mailing_list, 'title': 'Список активных рассылок',
                'count_active_mailings': len(mailing_list),
                'count_mailings': len(mailing_all),
-               'posts': posts_for_context}  # создание контекста для передачи в render
+               'posts': posts_for_context,
+               'count_active_users': len(count_active_users)}  # создание контекста для передачи в render
     return render(request, 'service/home.html', context)
 
 
 class MailingListView(ListView):
     """Класс-представление для вывода всех имеющихся рассылок"""
     model = Mailing
-    template_name = 'service/home.html'
+    template_name = 'service/mailings_list.html'
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
