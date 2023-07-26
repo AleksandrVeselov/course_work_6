@@ -31,6 +31,8 @@ def send_mailing(recipients) -> None:
 
 def send_email_tasks():
     """Функция для управления рассылками"""
+    with open('log.txt', 'a', encoding='UTF-8') as log_file:
+        log_file.write('Запуск Функция для управления рассылками')
     print('Функция для управления рассылками')
     now = datetime.now()  # текущая дата
     mailings = models.Mailing.objects.filter(status__in=[2, 3])  # рассылки со статусом создана или запущена
@@ -67,5 +69,12 @@ def send_email_tasks():
         # если флаг отправки True - запуск рассылки
         if to_send:
             send_mailing(mailing)
+
+
+def test_func():
+    with open('log.txt', 'a', encoding='UTF-8') as log_file:
+        log_file.write('Запуск Функция для управления рассылками')
+    print('Функция для управления рассылками')
+
 
 

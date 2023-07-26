@@ -1,8 +1,10 @@
 import random
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
+from django.views.decorators.cache import cache_page
 from django.views.generic import CreateView, UpdateView, DeleteView, ListView
 
 from service.forms import MailingForm
@@ -10,6 +12,7 @@ from service.models import Mailing, Client, MailingMessage, Blog
 from users.models import User
 
 
+@cache_page(60)
 def home(request):
     """Домашняя страница с выводом списка всех созданных, но не проведенных рассылок"""
     posts = Blog.objects.all()  # получаем все статьи в блоге
@@ -61,7 +64,7 @@ class MailingListView(ListView):
             return Mailing.objects.filter(owner=self.request.user.pk)
 
 
-class MailingCreateView(CreateView):
+class MailingCreateView(CreateView, LoginRequiredMixin):
     """Класс-представление для создания рассылки"""
     model = Mailing
     form_class = MailingForm
@@ -76,7 +79,7 @@ class MailingCreateView(CreateView):
         return super().form_valid(form)
 
 
-class MailingUpdateView(UpdateView):
+class MailingUpdateView(UpdateView, LoginRequiredMixin):
     """Класс-представление для редактирования рассылки"""
 
     model = Mailing
@@ -84,14 +87,14 @@ class MailingUpdateView(UpdateView):
     success_url = reverse_lazy('service:home')
 
 
-class MailingDeleteView(DeleteView):
+class MailingDeleteView(DeleteView, LoginRequiredMixin):
     """Класс-представление для удаления рассылки"""
 
     model = Mailing
     success_url = reverse_lazy('service:home')
 
 
-class ClientCreateView(CreateView):
+class ClientCreateView(CreateView, LoginRequiredMixin):
     """Класс-представление для создания клиента"""
 
     model = Client
@@ -99,7 +102,7 @@ class ClientCreateView(CreateView):
     fields = ('email', 'name', 'surname', 'patronymic', 'comment')
 
 
-class MessageCreateView(CreateView):
+class MessageCreateView(CreateView, LoginRequiredMixin):
     """Класс-представление для создания сообщения"""
 
     model = MailingMessage
@@ -107,7 +110,7 @@ class MessageCreateView(CreateView):
     success_url = reverse_lazy('service:create')
 
 
-def disable_mailing(request, pk):
+def disable_mailing(pk):
     """функция для отключения рассылок"""
     mailing_for_disable = Mailing.objects.get(pk=pk)
     mailing_for_disable.status = 1
