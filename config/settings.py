@@ -146,15 +146,16 @@ LOGIN_REDIRECT_URL = '/'
 # Запуск функции send_email_tasks каждую минуту
 CRONJOBS = [
     ('*/1 * * * *', 'service.cron.send_email_tasks'),
-    ('36 7 * * * ', 'service.cron.send_email_tasks'),
-    ('41 7 * * *', 'service.cron.test_func')
 
 ]
 
-CACHE_ENABLED = True
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379",
+CACHE_ENABLED = os.getenv('CACHE_ENABLED') == 'True'
+
+if CACHE_ENABLED:
+    # Настройки кеширования
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+            'LOCATION': os.getenv('CACHE_LOCATION'),
+        }
     }
-}

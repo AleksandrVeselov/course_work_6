@@ -55,6 +55,7 @@ class Mailing(models.Model):
     def __str__(self):
         return f'Рассылка на {self.date_time} с периодичностью {self.periodicity}. Статус {self.status}'
 
+
     class Meta:
         verbose_name = 'Рассылка'
         verbose_name_plural = 'Рассылки'

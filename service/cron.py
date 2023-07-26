@@ -8,6 +8,7 @@ from service import models
 
 def send_mailing(recipients) -> None:
     """Отправка рассылки клиентам из списка recipients"""
+    print('отправка...')
     emails = recipients.client.values('email')  # список почтовых адресов для рассылки
     title = recipients.message.title  # тема письма
     text = recipients.message.message  # текст письма
@@ -31,8 +32,6 @@ def send_mailing(recipients) -> None:
 
 def send_email_tasks():
     """Функция для управления рассылками"""
-    with open('log.txt', 'a', encoding='UTF-8') as log_file:
-        log_file.write('Запуск Функция для управления рассылками')
     print('Функция для управления рассылками')
     now = datetime.now()  # текущая дата
     mailings = models.Mailing.objects.filter(status__in=[2, 3])  # рассылки со статусом создана или запущена
@@ -56,25 +55,21 @@ def send_email_tasks():
 
                 # если периодичность отправки - раз в день и последняя попытка была один день назад
                 if mailing.periodicity == 1 and from_last == timedelta(days=1):
+                    print('day')
                     to_send = True  # флаг отправки принимает значение True
 
                 # если периодичность отправки - раз в неделю и последняя попытка была семь дней назад
                 elif mailing.periodicity == 2 and from_last == timedelta(days=7):
+                    print('week')
                     to_send = True  # флаг отправки принимает значение True
 
                 # если периодичность отправки - раз в месяц и последняя попытка была 30 дней назад
                 elif mailing.periodicity == 3 and from_last == timedelta(days=30):
+                    print('month')
                     to_send = True  # флаг отправки принимает значение True
-
         # если флаг отправки True - запуск рассылки
         if to_send:
             send_mailing(mailing)
-
-
-def test_func():
-    with open('log.txt', 'a', encoding='UTF-8') as log_file:
-        log_file.write('Запуск Функция для управления рассылками')
-    print('Функция для управления рассылками')
 
 
 

@@ -1,15 +1,15 @@
 import random
 
-from django.contrib.auth import get_user_model
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.decorators.cache import cache_page
 from django.views.generic import CreateView, UpdateView, DeleteView, ListView
 
+from service.cron import send_email_tasks
 from service.forms import MailingForm
 from service.models import Mailing, Client, MailingMessage, Blog
-from users.models import User
 
 
 @cache_page(60)
@@ -75,6 +75,7 @@ class MailingCreateView(CreateView, LoginRequiredMixin):
 
         mailing = form.save()  # сохранение информации о созданной рассылке
         mailing.owner = self.request.user  # присваиваем атрибуту owner ссылку на текущего пользователя
+        send_email_tasks()
         mailing.save()
         return super().form_valid(form)
 
