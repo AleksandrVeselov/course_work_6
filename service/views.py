@@ -30,12 +30,12 @@ def home(request):
         mailing_list = Mailing.objects.filter(status=2 or 3, owner=request.user.pk)  # все активные или созданные рассылки пользователя
         mailing_all = Mailing.objects.filter(owner=request.user.pk)  # все рассылки пользователя
 
-    count_active_users = User.objects.filter(is_active=True)  # количество активных пользователей сервиса
+    count_clients = Client.objects.all()  # количество клиентов для рассылок
     context = {'object_list': mailing_list, 'title': 'Список активных рассылок',
                'count_active_mailings': len(mailing_list),
                'count_mailings': len(mailing_all),
                'posts': posts_for_context,
-               'count_active_users': len(count_active_users)}  # создание контекста для передачи в render
+               'count_clients': len(count_clients)}  # создание контекста для передачи в render
     return render(request, 'service/home.html', context)
 
 
