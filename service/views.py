@@ -9,7 +9,7 @@ from django.views.generic import CreateView, UpdateView, DeleteView, ListView
 
 from service.cron import send_email_tasks
 from service.forms import MailingForm
-from service.models import Mailing, Client, MailingMessage, Blog
+from service.models import Mailing, Client, MailingMessage, Blog, MailingLog
 
 
 @cache_page(60)
@@ -113,7 +113,47 @@ class MessageCreateView(CreateView, LoginRequiredMixin):
 
 def disable_mailing(pk):
     """функция для отключения рассылок"""
+
     mailing_for_disable = Mailing.objects.get(pk=pk)
     mailing_for_disable.status = 1
     mailing_for_disable.save()
     return redirect(reverse('service:mailings'))
+
+
+class MailingLogList(ListView, LoginRequiredMixin):
+    """Класс-представление для вывода лога проведенных рассылок"""
+    model = MailingLog
+
+    def get_queryset(self):
+        """Если пользователь имеет права суперпользователя, ему возвращаются логи по всем проведенным рассылкам,
+        иначе только по рассылкам, созданным текущим авторизованным пользователем"""
+
+        return MailingLog.objects.filter(mailing__owner=self.request.user)
+
+
+class MailingMessagesList(ListView, LoginRequiredMixin):
+    """Класс-представление для вывода списка сообщений, созданных в сервисе"""
+    model = MailingMessage
+
+    def get_queryset(self):
+        """Если пользователь обладает правами суперпользователя, ему возвращаются все сообщения, созданные в системе,
+        иначе только сообщения, созданные текущим авторизованным пользователем"""
+
+        if self.request.user.is_superuser:
+            return super().get_queryset()
+
+        return MailingMessage.objects.filter(owner=self.request.user)
+
+
+class ClientListView(ListView, LoginRequiredMixin):
+    model = Client
+
+    def get_queryset(self):
+        """Если пользователь имеет права суперпользователя, ему возвращаются все клиенты, созданные в системе,
+        иначе только клиенты, созданные текущим авторизованным пользователем"""
+
+        if self.request.user.is_superuser:
+            return super().get_queryset()
+        return Client.objects.filter(owner=self.request.user)
+
+

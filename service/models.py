@@ -15,6 +15,7 @@ class MailingMessage(models.Model):
 
     title = models.CharField(max_length=100, verbose_name='Тема сообщения')  # Тема сообщения
     message = models.TextField(verbose_name='Тело сообщения')  # Тело сообщения
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE)
 
     class Meta:
         verbose_name = 'Сообщение'

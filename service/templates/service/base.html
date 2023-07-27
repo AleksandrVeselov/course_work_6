@@ -42,6 +42,11 @@
                     {% if perms.users.can_view_users %}
                         <li><a class="text-muted" href="{% url 'users:users_list' %}">Пользователи сервиса</a></li>
                     {% endif %}
+                    {% if  user.is_authenticated %}
+                        <li><a class="text-muted" href="{% url 'service:clients' %}">Клиенты сервиса</a></li>
+                        <li><a class="text-muted" href="{% url 'service:messages' %}">Сообщения</a></li>
+                        <li><a class="text-muted" href="{% url 'service:log' %}">Лог рассылок</a></li>
+                    {% endif %}
                 </ul>
             </div>
             <div class="col-6 col-md">
